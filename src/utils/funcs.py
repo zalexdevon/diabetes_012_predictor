@@ -2,6 +2,8 @@ from Mylib import myfuncs
 import os
 import re
 import pandas as pd
+from IPython.display import Audio, display
+import numpy as np
 
 
 SCORINGS_PREFER_MININUM = ["log_loss", "mse", "mae"]
@@ -48,3 +50,19 @@ def get_list_best_models(scoring):
             "training_time (s)": training_times,  # Thời gian theo second
         }
     )
+
+
+def make_beep_sound(frequency=1000, duration=1.0, rate=44100, volume=1.0):
+    """Tạo ra âm thanh beep <br>
+    Tác dụng: Báo hiệu kết thúc của 1 quá trình, vd: model training
+
+    Args:
+        frequency (int, optional): _description_. Defaults to 1000.
+        duration (float, optional): _description_. Defaults to 1.0.
+        rate (int, optional): _description_. Defaults to 44100.
+        volume (float, optional): _description_. Defaults to 1.0.
+    """
+    t = np.linspace(0, duration, int(rate * duration), False)
+    tone = np.sin(frequency * 2 * np.pi * t)
+    tone *= volume  # Adjust volume (0.0 to 1.0)
+    display(Audio(tone, rate=rate, autoplay=True))
