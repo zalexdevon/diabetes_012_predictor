@@ -122,21 +122,12 @@ def train_and_save_models(
 
 
 def display_model_training_results(results, scoring):
-    list_full_model_index, list_train_scoring, list_val_scoring, list_training_time = (
-        zip(*results)
-    )
-
-    result = pd.DataFrame(
-        data={
-            "full_model_index": list_full_model_index,
-            "train_scoring": list_train_scoring,
-            "val_scoring": list_val_scoring,
-            "training_time": list_training_time,
-        }
-    )
-    ascending_param = funcs.get_reverse_param_in_sorted(scoring)
-    result = result.sort_values(by="val_scoring", ascending=ascending_param)
-    return result
+    reverse_param = funcs.get_reverse_param_in_sorted(scoring)
+    sorted_results = sorted(results, key=lambda item: item[2], reverse=reverse_param)
+    for result in sorted_results:
+        print(
+            f"Model index {result[0]}\n-> Train {scoring}: {result[1]}, Val {scoring}: {result[2]}, Time: {result[3]} (s)"
+        )
 
 
 def train_on_batches(model, batches_folder_path, num_batch, scoring):
