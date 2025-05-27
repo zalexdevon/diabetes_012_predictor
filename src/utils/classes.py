@@ -192,7 +192,7 @@ class ModelTrainingResultGetter:
     MODEL_TRAINING_PATH = "artifacts/model_training"
 
     def __init__(self, model_name, model_indices, scoring):
-        if isinstance(self.model_indices, list) == False:
+        if isinstance(model_indices, list) == False:
             raise TypeError("Tham số model_indices phải là một list")
 
         self.model_name = model_name
