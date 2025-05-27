@@ -3,11 +3,10 @@ import os
 from datetime import datetime
 import pytz
 
-logs_path = "artifacts/logs"
-os.makedirs(logs_path, exist_ok=True)
-
 
 def configure_logger():
+    logs_path = "artifacts/logs"
+    os.makedirs(logs_path, exist_ok=True)
     date_format = "%d-%m-%Y-%H-%M-%S"
 
     # Get giờ Việt Nam
