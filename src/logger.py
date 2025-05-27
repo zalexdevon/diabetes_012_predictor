@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+import pytz
 
 logs_path = "artifacts/logs"
 os.makedirs(logs_path, exist_ok=True)
@@ -8,7 +9,14 @@ os.makedirs(logs_path, exist_ok=True)
 
 def configure_logger():
     date_format = "%d-%m-%Y-%H-%M-%S"
-    log_file = f"{datetime.now().strftime(date_format)}.log"
+
+    # Get giờ Việt Nam
+    utc_now = datetime.now(pytz.utc)
+    vietnam_tz = pytz.timezone("Asia/Ho_Chi_Minh")
+    vietnam_time = utc_now.astimezone(vietnam_tz)
+
+    # Get tên file
+    log_file = f"{vietnam_time.strftime(date_format)}.log"
     log_file_path = os.path.join(logs_path, log_file)
 
     logging.basicConfig(
