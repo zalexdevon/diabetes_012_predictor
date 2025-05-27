@@ -34,6 +34,16 @@ def load_data_for_batch_model_training(data_transformation_path, batches_folder_
     return num_batch, val_feature_data, val_target_data
 
 
+def save_models_before_training(model_training_path, model_indices, models):
+    for model_index, model in zip(model_indices, models):
+        # Tạo thư mục
+        model_folder_path = f"{model_training_path}/{model_index}"
+        myfuncs.create_directories_on_colab(model_folder_path)
+
+        # Save model
+        myfuncs.save_python_object(f"{model_folder_path}/model.pkl", model)
+
+
 def is_val_scoring_better_than_target_scoring(target_scoring, val_scoring, scoring):
     if scoring in funcs.SCORINGS_PREFER_MAXIMUM:
         return val_scoring > target_scoring
@@ -59,7 +69,6 @@ def train_and_save_models(
     model_training_path,
     model_name,
     model_indices,
-    models,
     train_feature_data,
     train_target_data,
     val_feature_data,
@@ -69,10 +78,11 @@ def train_and_save_models(
 ):
     log_message = ""
     results = []
-    for model_index, model in zip(model_indices, models):
-        # Tạo thư mục để lưu model và kết quả training
+    for model_index in model_indices:
+        # Load model
         model_folder_path = f"{model_training_path}/{model_index}"
-        myfuncs.create_directories([model_folder_path])
+        model = myfuncs.load_python_object(f"{model_folder_path}/model.pkl")
+        os.remove(f"{model_folder_path}/model.pkl")  # Xóa vì không cần thiết
 
         # Train model
         full_model_index = f"{model_name}_{model_index}"
