@@ -4,7 +4,7 @@ import re
 import pandas as pd
 from IPython.display import Audio, display
 import numpy as np
-
+import itertools
 
 SCORINGS_PREFER_MININUM = ["log_loss", "mse", "mae"]
 SCORINGS_PREFER_MAXIMUM = ["accuracy"]
@@ -33,23 +33,28 @@ def gather_result_from_model_training():
     return components
 
 
+def gather_result_from_model_training_for_1folder(folder):
+    components = []
+    folder_path = f"artifacts/model_training/{folder}"
+
+    list_model_path = [f"{folder_path}/{item}" for item in os.listdir(folder_path)]
+
+    for model_path in list_model_path:
+        result = myfuncs.load_python_object(f"{model_path}/result.pkl")
+        components.append(result)
+
+    return components
+
+
+def gather_result_from_model_training_for_many_folders(folders):
+    list_components_for_1folder = [
+        gather_result_from_model_training_for_1folder(item) for item in folders
+    ]
+    return list(itertools.chain(*list_components_for_1folder))
+
+
 def get_reverse_param_in_sorted(scoring):
     return scoring in SCORINGS_PREFER_MAXIMUM
-
-
-def get_list_best_models(scoring):
-    list_result = gather_result_from_model_training()
-    reverse_param_in_sort = get_reverse_param_in_sorted(scoring)
-    list_result = sorted(list_result, key=lambda x: x[2], reverse=reverse_param_in_sort)
-    model_indices, train_scorings, val_scorings, training_times = zip(*list_result)
-    return pd.DataFrame(
-        data={
-            "model_index": model_indices,
-            "train_scoring": train_scorings,
-            "val_scoring": val_scorings,
-            "training_time (s)": training_times,  # Thời gian theo second
-        }
-    )
 
 
 def make_beep_sound(frequency=1000, duration=1.0, rate=44100, volume=1.0):

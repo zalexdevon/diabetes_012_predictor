@@ -153,3 +153,38 @@ class ModelTrainingResultPlotter:
         )
 
         return fig
+
+
+class BestModelGatherer:
+    MODEL_TRAINING_PATH = "artifacts/model_training"
+
+    def __init__(self, scoring, folders=None):
+        self.folders = folders
+        self.scoring = scoring
+
+    def get_result(self):
+        list_result = None
+        if self.folders is None:
+            list_result = funcs.gather_result_from_model_training()
+        elif len(self.folders) == 1:
+            list_result = funcs.gather_result_from_model_training_for_1folder(
+                self.folders
+            )
+        else:
+            list_result = funcs.gather_result_from_model_training_for_many_folders(
+                self.folders
+            )
+
+        reverse_param_in_sort = funcs.get_reverse_param_in_sorted(self.scoring)
+        list_result = sorted(
+            list_result, key=lambda x: x[2], reverse=reverse_param_in_sort
+        )
+        model_indices, train_scorings, val_scorings, training_times = zip(*list_result)
+        return pd.DataFrame(
+            data={
+                "model_index": model_indices,
+                "train_scoring": train_scorings,
+                "val_scoring": val_scorings,
+                "training_time (s)": training_times,  # Thời gian theo second
+            }
+        )
