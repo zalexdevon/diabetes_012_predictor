@@ -71,3 +71,39 @@ def make_beep_sound(frequency=1000, duration=1.0, rate=44100, volume=1.0):
     tone = np.sin(frequency * 2 * np.pi * t)
     tone *= volume  # Adjust volume (0.0 to 1.0)
     display(Audio(tone, rate=rate, autoplay=True))
+
+
+def display_model_training_results(results, scoring):
+    reverse_param = get_reverse_param_in_sorted(scoring)
+    sorted_results = sorted(results, key=lambda item: item[2], reverse=reverse_param)
+    for result in sorted_results:
+        print(
+            f"Model {result[0]}\n-> Train {scoring}: {result[1]}, Val {scoring}: {result[2]}, Time: {result[3]} (s)"
+        )
+
+
+def get_model_training_result_from_1model_index(model_name, model_index):
+    result_path = f"artifacts/model_training/{model_name}/{model_index}/result.pkl"
+
+    if os.path.exists(result_path) == False:
+        return None
+
+    result = myfuncs.load_python_object(result_path)
+    return result
+
+
+def get_model_training_result_from_model_indices(model_name, model_indices, scoring):
+    if model_indices == []:
+        return
+
+    results = [
+        get_model_training_result_from_1model_index(model_name, model_index)
+        for model_index in model_indices
+    ]
+    for result, model_index in zip(results, model_indices):
+        if result is None:
+            print(f"Model {model_index} chưa được trained")
+
+        print(
+            f"Model {result[0]}\n-> Train {scoring}: {result[1]}, Val {scoring}: {result[2]}, Time: {result[3]} (s)"
+        )
