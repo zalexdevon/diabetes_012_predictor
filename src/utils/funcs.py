@@ -80,30 +80,3 @@ def display_model_training_results(results, scoring):
         print(
             f"Model {result[0]}\n-> Train {scoring}: {result[1]}, Val {scoring}: {result[2]}, Time: {result[3]} (s)"
         )
-
-
-def get_model_training_result_from_1model_index(model_name, model_index):
-    result_path = f"artifacts/model_training/{model_name}/{model_index}/result.pkl"
-
-    if os.path.exists(result_path) == False:
-        return None
-
-    result = myfuncs.load_python_object(result_path)
-    return result
-
-
-def get_model_training_result_from_model_indices(model_name, model_indices, scoring):
-    if model_indices == []:
-        return
-
-    results = [
-        get_model_training_result_from_1model_index(model_name, model_index)
-        for model_index in model_indices
-    ]
-    for result, model_index in zip(results, model_indices):
-        if result is None:
-            print(f"Model {model_index} chưa được trained")
-
-        print(
-            f"Model {result[0]}\n-> Train {scoring}: {result[1]}, Val {scoring}: {result[2]}, Time: {result[3]} (s)"
-        )

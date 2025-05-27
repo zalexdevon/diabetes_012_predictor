@@ -156,8 +156,6 @@ class ModelTrainingResultPlotter:
 
 
 class BestModelGatherer:
-    MODEL_TRAINING_PATH = "artifacts/model_training"
-
     def __init__(self, scoring, folders=None):
         self.folders = folders
         self.scoring = scoring
@@ -188,3 +186,41 @@ class BestModelGatherer:
                 "training_time (s)": training_times,  # Thời gian theo second
             }
         )
+
+
+class ModelTrainingResultGetter:
+    MODEL_TRAINING_PATH = "artifacts/model_training"
+
+    def __init__(self, model_name, model_indices, scoring):
+        if isinstance(self.model_indices, list) == False:
+            raise TypeError("Tham số model_indices phải là một list")
+
+        self.model_name = model_name
+        self.model_indices = model_indices
+        self.scoring = scoring
+
+    def get_result(self):
+        if self.model_indices == []:
+            return
+
+        results = [
+            self.get_from_1model(model_index) for model_index in self.model_indices
+        ]
+        for result, model_index in zip(results, self.model_indices):
+            if result is None:
+                print(f"Model {model_index} chưa được trained")
+
+            print(
+                f"Model {result[0]}\n-> Train {self.scoring}: {result[1]}, Val {self.scoring}: {result[2]}, Time: {result[3]} (s)"
+            )
+
+    def get_from_1model(self, model_index):
+        result_path = (
+            f"{self.MODEL_TRAINING_PATH}/{self.model_name}/{model_index}/result.pkl"
+        )
+
+        if os.path.exists(result_path) == False:
+            return None
+
+        result = myfuncs.load_python_object(result_path)
+        return result
