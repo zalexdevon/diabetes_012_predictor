@@ -38,7 +38,7 @@ def save_models_before_training(model_training_path, model_indices, models):
     for model_index, model in zip(model_indices, models):
         # Tạo thư mục
         model_folder_path = f"{model_training_path}/{model_index}"
-        myfuncs.create_directories_on_colab(model_folder_path)
+        myfuncs.create_directories_on_colab([model_folder_path])
 
         # Save model
         myfuncs.save_python_object(f"{model_folder_path}/model.pkl", model)
