@@ -90,11 +90,15 @@ def do_transform_data_in_data_transformation(
     correction_transformer,
 ):
     df_train_feature = feature_transformer.fit_transform(df_train).astype("float32")
-    df_train_target = target_transformer.fit_transform(df_train).astype("int8")
+    df_train_target = (
+        target_transformer.fit_transform(df_train).values.reshape(-1).astype("int8")
+    )
 
     df_val_corrected = correction_transformer.transform(df_val)
     df_val_feature = feature_transformer.transform(df_val_corrected).astype("float32")
-    df_val_target = target_transformer.transform(df_val_corrected).astype("int8")
+    df_val_target = (
+        target_transformer.transform(df_val_corrected).values.reshape(-1).astype("int8")
+    )
 
     return df_train_feature, df_train_target, df_val_feature, df_val_target
 
