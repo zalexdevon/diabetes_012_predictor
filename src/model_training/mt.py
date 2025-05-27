@@ -2,6 +2,7 @@ import os
 from Mylib import myfuncs, fit_incremental_sl_model
 import time
 from src.utils import funcs
+import pandas as pd
 
 
 def load_data_for_model_training(data_transformation_path):
@@ -67,6 +68,7 @@ def train_and_save_models(
     model_saving_val_scoring_limit,
 ):
     log_message = ""
+    results = []
     for model_index, model in zip(model_indices, models):
         # Tạo thư mục để lưu model và kết quả training
         model_folder_path = f"{model_training_path}/{model_index}"
@@ -108,12 +110,33 @@ def train_and_save_models(
             model_folder_path,
             model,
         )
+        result = (full_model_index, train_scoring, val_scoring, training_time)
         myfuncs.save_python_object(
             f"{model_folder_path}/result.pkl",
-            (full_model_index, train_scoring, val_scoring, training_time),
+            result,
         )
 
-    return log_message
+        results.append(result)
+
+    return log_message, results
+
+
+def display_model_training_results(results, scoring):
+    list_full_model_index, list_train_scoring, list_val_scoring, list_training_time = (
+        zip(*results)
+    )
+
+    result = pd.DataFrame(
+        data={
+            "full_model_index": list_full_model_index,
+            "train_scoring": list_train_scoring,
+            "val_scoring": list_val_scoring,
+            "training_time": list_training_time,
+        }
+    )
+    ascending_param = funcs.get_reverse_param_in_sorted(scoring)
+    result = result.sort_values(by="val_scoring", ascending=ascending_param)
+    return result
 
 
 def train_on_batches(model, batches_folder_path, num_batch, scoring):
